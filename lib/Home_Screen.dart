@@ -1,5 +1,13 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce_app/Account_screen.dart';
+import 'package:e_commerce_app/cart_screen.dart';
+import 'package:e_commerce_app/description_screen.dart';
+import 'package:e_commerce_app/firebase_services.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,12 +17,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+//final HomeController=controller=Get.put(HomeController());
+
+
+  final List<String> Category = ["All", "Men", "Women", "Girls", "Kids"];
+  final List<String> imageurls = [
+    "assets/images/carousel2.jpeg",
+    "assets/images/carousel_1.jpg",
+    "assets/images/carousel3.png",
+    "assets/images/carousel5.jpg",
+  ];
+
+  TextEditingController productName = TextEditingController();
+  TextEditingController productimage = TextEditingController();
+  TextEditingController price = TextEditingController();
+  TextEditingController description = TextEditingController();
+  Stream<QuerySnapshot>? e_commerce;
+  getload() async {
+    e_commerce = await Database.getEcommerceDetails();
+    setState(() {});
+  }
+
   User? user;
   String? idToken;
+
+
   @override
   void initState() {
     super.initState();
     _loadIdToken();
+    getload();
   }
 
   Future<void> _loadIdToken() async {
@@ -27,8 +59,238 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //bottomnavigation
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.amber[900],
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => CartPageScreen(
+                name: productName.text,
+                image: productimage.text,
+                price: price.text,
+              )),
+            );
+          }
+          else if(index==2){
+            Navigator.push(context, MaterialPageRoute(builder: (_)=>AccountPage()));
+          }
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: "wishList",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
+        ],
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(radius: 22),
+                SizedBox(width: 10),
+                Column(
+                  children: [
+                    Text("Hello Alex", style: TextStyle(color: Colors.grey)),
+                    Text(
+                      "GoodMorning",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Icon(Icons.notifications_none),
+              ],
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Search",
+                prefixIcon: Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              height: 40,
+
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: Category.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[400],
+                    ),
+                    child: Text(
+                      Category[index],
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 30),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 150,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 17 / 9,
+                autoPlayCurve: Curves.linear,
+                autoPlayAnimationDuration: Duration(microseconds: 800),
+                viewportFraction: 0.9,
+              ),
+              items: imageurls.map((item) {
+                return Container(
+                  height: 150,
+                  width: double.infinity,
+
+                  child: Image.asset(item, fit: BoxFit.cover),
+                );
+              }).toList(),
+            ),
+
+            SizedBox(height: 30),
+            StreamBuilder(
+              stream: e_commerce,
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("An error occured:${snapshot.error}"),
+                  );
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Text("No data available");
+                }
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot Ds = snapshot.data!.docs[index];
+
+                    return Container(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DescriptionPageScreen(
+                                      productname: Ds['productName'],
+                                      image: Ds['image'],
+                                      price: Ds['price'],
+                                      description: Ds['description'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 150,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage("" + Ds['image']),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "" + Ds['productName'],
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+
+                            Row(
+                              children: [
+                                Text(
+                                  "₹" + Ds['price'],
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Spacer(),
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CartPageScreen(
+                                          name: Ds['productName'],
+                                          image: Ds['image'],
+                                          price: Ds['price'],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.shopping_cart_checkout,
+                                    size: 20,
+                                    color: Colors.indigo,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
