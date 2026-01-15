@@ -93,9 +93,53 @@ class _AdminPageState extends State<AdminPage> {
                             priceCtrl.text.trim(),
                             descriptionCtrl.text.trim(),
                           );
+                          nameCtrl.clear();
+                          imageCtrl.clear();
+                          priceCtrl.clear();
+                          descriptionCtrl.clear();
                         },
                         child: Text("Add Product"),
                       ),
+              ),
+              SizedBox(height: 30),
+              Divider(),
+               SizedBox(height: 30),
+              Expanded(
+                child: StreamBuilder(
+                  stream: controller.getProduct(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Text("No products founds");
+                    }
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        var docs = snapshot.data!.docs[index];
+                        return Card(
+                          child: ListTile(
+                            leading: Image.network(
+                              docs["image"],
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                            title: Text(docs['productname']),
+                            subtitle: Text("₹${docs['price']}"),
+                            trailing: IconButton(
+                              onPressed: () {
+                                controller.deleteEcommerce(docs.id);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

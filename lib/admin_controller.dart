@@ -4,6 +4,22 @@ import 'package:get/get.dart';
 
 class AdminController extends GetxController {
   var isLoding = false.obs;
+
+  var productList = <QueryDocumentSnapshot>[].obs;
+  @override
+  void onInit() {
+    super.onInit();
+    fetchProduct();
+  }
+
+  void fetchProduct() {
+    FirebaseFirestore.instance.collection("E_commerce").snapshots().listen((
+      snapshot,
+    ) {
+      productList.value = snapshot.docs;
+    });
+  }
+//add function
   Future<void> addProduct(
     String name,
     String image,
@@ -15,14 +31,12 @@ class AdminController extends GetxController {
 
       String id = FirebaseFirestore.instance.collection("E_commerce").doc().id;
       await Database.addEcommerceDetails({
-        "id":id,
+        "id": id,
         "productname": name,
         "image": image,
         "price": int.parse(price),
         "description": description,
-      },
-      id,
-      );
+      }, id);
       Get.snackbar("Success", "product added successfully");
     } catch (e) {
       Get.snackbar("Error", e.toString());
@@ -30,7 +44,15 @@ class AdminController extends GetxController {
       isLoding.value = false;
     }
   }
+  //get product
 
+  Stream<QuerySnapshot> getProduct() {
+    return FirebaseFirestore.instance
+        .collection("E_commerce")
+        .orderBy("productname")
+        .snapshots();
+  }
+//delete function
   Future deleteEcommerce(String id) async {
     try {
       isLoding.value = true;

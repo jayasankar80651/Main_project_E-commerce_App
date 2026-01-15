@@ -1,10 +1,14 @@
 import 'package:e_commerce_app/cart_screen.dart';
+
 import 'package:flutter/material.dart';
+
+List<Map<String,dynamic>>wishList=[];
+   
 
 class DescriptionPageScreen extends StatefulWidget {
   final productname;
   final image;
-  final price;
+  final int price;
   final description;
   const DescriptionPageScreen({
     super.key,
@@ -38,7 +42,7 @@ class _DescriptionPageScreenState extends State<DescriptionPageScreen> {
               ),
             ),
             SizedBox(height: 10),
-           
+
             SizedBox(height: 10),
             Text(
               widget.productname,
@@ -50,54 +54,44 @@ class _DescriptionPageScreenState extends State<DescriptionPageScreen> {
             SizedBox(height: 10),
             Row(
               children: [
-                Container(
-                  height: 50,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlueAccent,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text("₹"+
-                    widget.price ,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                Center(
+                  child: Text(
+                    "₹" + widget.price.toString(),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CartPageScreen (
-                              name:widget.productname,
-                              image: widget.image,
-                              price: widget.price,
-                             
-                      )),
+
+                //wishList button
+                IconButton(
+                  onPressed: () {
+                    wishList.add({
+                      "name": widget.productname,
+                      "image": widget.image,
+                      "price": widget.price,
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Added to wishList")),
                     );
                   },
-                  child: Container(
-                    height: 50,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "ADD TO CART",
-                        style: TextStyle(
-                          color: Colors.amber[900],
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                  icon: Icon(Icons.favorite_border, color: Colors.red[700]),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartPageScreen(
+                          totalAmount: widget.price,
+                          cartItem: [],
+                          name: widget.productname ?? "no name",
+                          image: widget.image ?? "",
+                          price: widget.price.toString(),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
+                  icon: Icon(Icons.shopping_cart_checkout),
                 ),
               ],
             ),

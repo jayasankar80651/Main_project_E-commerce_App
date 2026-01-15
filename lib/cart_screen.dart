@@ -2,11 +2,15 @@ import 'package:e_commerce_app/Razorpay_screen.dart';
 import 'package:flutter/material.dart';
 
 class CartPageScreen extends StatefulWidget {
+  final List<Map<String, dynamic>> cartItem;
+  final int totalAmount;
   final name;
   final image;
   final price;
   const CartPageScreen({
     super.key,
+    required this.totalAmount,
+    required this.cartItem,
     required this.name,
     required this.image,
     required this.price,
@@ -20,10 +24,18 @@ class _CartPageScreenState extends State<CartPageScreen> {
   List<Map<String, dynamic>> Cart = [];
   void initState() {
     super.initState();
+    int itemprice;
+    if (widget.price is int) {
+      itemprice = widget.price;
+    } else if (widget.price is String) {
+      itemprice = int.tryParse(widget.price) ?? 0;
+    } else {
+      itemprice = 0;
+    }
     Cart.add({
       "name": widget.name,
       "image": widget.image,
-      "price": int.tryParse(widget.price) ?? 0,
+      "price": itemprice,
       "Quantity": 1,
     });
   }
@@ -65,71 +77,70 @@ class _CartPageScreenState extends State<CartPageScreen> {
           : ListView.builder(
               itemCount: Cart.length,
               itemBuilder: (context, index) {
-                return Container(
-                  height: 180,
-                  width: 100 ,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                  margin: EdgeInsets.all(10.0),
+                var item = Cart[index];
+                return Card(
                   child: ListTile(
                     leading: Image.network(
                       Cart[index]['image'],
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
-
                     ),
-                    
+
                     title: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Expanded(
-                        child: Column(
-                          children: [
-                            Row(children: [Text(Cart[index]['name'])]),
-                            SizedBox(height: 10),
-                            Row(children: [Text("Price : ₹ ${getTotalPrice()}")]),
-                            SizedBox(height: 10),
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  child: Center(
-                                    child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          Cart[index]['quantity']++;
-                                        });
-                                      },
-                                      icon: Icon(Icons.add),
-                                    ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                Cart[index]['name'],
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(children: [Text("Price : ₹ ${item['price']}")]),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                child: Center(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        item['Quantity']++;
+                                      });
+                                    },
+                                    icon: Icon(Icons.add),
                                   ),
                                 ),
-                                SizedBox(width: 5),
-                                Text(
-                                  Cart[index]['quantity'].toString(),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(width: 5),
-                                CircleAvatar(
-                                  child: Center(
-                                    child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          if (Cart[index]["quantity"] > 1) {
-                                            Cart[index]['quantity']--;
-                                          } else {
-                                            Cart.removeAt(index);
-                                          }
-                                        });
-                                      },
-                                      icon: Icon(Icons.remove),
-                                    ),
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                Cart[index]['Quantity'].toString(),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(width: 5),
+                              CircleAvatar(
+                                child: Center(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        if (item["Quantity"] > 1) {
+                                          item['Quantity']--;
+                                        } else {
+                                          Cart.removeAt(index);
+                                        }
+                                      });
+                                    },
+                                    icon: Icon(Icons.remove),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                     trailing: IconButton(
@@ -155,9 +166,16 @@ class _CartPageScreenState extends State<CartPageScreen> {
             Spacer(),
             GestureDetector(
               onTap: () {
+                
+               int? totalAmount = getTotalPrice();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RazorpayPage()),
+                  MaterialPageRoute(
+                    builder: (context) => RazorpayPage(
+                      totalAmount: totalAmount!,
+                      cartItem:Cart, 
+                      amount: totalAmount),
+                  ),
                 );
               },
               child: Container(

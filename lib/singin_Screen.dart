@@ -4,7 +4,7 @@ import 'package:e_commerce_app/admin_screen.dart';
 import 'package:e_commerce_app/signUp_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
 
 class SigninPage extends StatefulWidget {
@@ -17,12 +17,31 @@ class SigninPage extends StatefulWidget {
 class _SigninPageState extends State<SigninPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final String adminEmail = "admin@gmail.com";
+  final String adminPassword = "12345";
   Future<void> login() async {
+    //check admin credentials checking
+    if (emailController.text.trim() == adminEmail &&
+          passwordController.text.trim() == adminPassword) {
+             emailController.clear();
+      passwordController.clear();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminPage()),
+          
+        );
+        return;
+      }
+      //normal firebase login
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      emailController.clear();
+      passwordController.clear();
+
+      
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
@@ -176,7 +195,7 @@ class _SigninPageState extends State<SigninPage> {
                 ),
               ],
             ),
-            GestureDetector(
+            /* GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
@@ -184,7 +203,7 @@ class _SigninPageState extends State<SigninPage> {
                 );
               },
               child: Text("Admin "),
-            ),
+            ),*/
           ],
         ),
       ),
