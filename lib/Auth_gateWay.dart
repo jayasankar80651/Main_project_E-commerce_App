@@ -1,3 +1,4 @@
+
 import 'package:e_commerce_app/Home_Screen.dart';
 import 'package:e_commerce_app/admin_screen.dart';
 import 'package:e_commerce_app/singin_Screen.dart';
@@ -16,11 +17,12 @@ class AuthGatePage extends StatelessWidget {
       if(snapshot.connectionState==ConnectionState.waiting){
         return const Center(child: CircularProgressIndicator(),);
       }else {
-        if(snapshot.hasData){
-          if(snapshot.data! .email==adminEmail){
+        if(snapshot.hasData &&snapshot.data != null){
+          final email=snapshot.data!.email??"";
+          if(email==adminEmail){
             return  AdminPage(); 
           }
-          return const HomePage();
+         return HomePage();
         }
         return const  SigninPage();
       }

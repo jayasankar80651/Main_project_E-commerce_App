@@ -86,11 +86,11 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     user?.displayName ?? "user name",
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: Colors.black,fontSize: 18)
                   ),
                   Text(
                     user?.email ?? "user@gmail.com",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -188,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                     return Container(
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.amber[200],
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
@@ -211,6 +211,7 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                               child: SizedBox(
+                                
                                 child: Container(
                                   height: 100,
                                   width: double.infinity,

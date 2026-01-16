@@ -1,6 +1,4 @@
-import 'package:e_commerce_app/Home_Screen.dart';
 import 'package:e_commerce_app/ResetPassword.dart';
-import 'package:e_commerce_app/admin_screen.dart';
 import 'package:e_commerce_app/signUp_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,22 +15,19 @@ class SigninPage extends StatefulWidget {
 class _SigninPageState extends State<SigninPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   final String adminEmail = "admin@gmail.com";
   final String adminPassword = "12345";
+
   Future<void> login() async {
     //check admin credentials checking
     if (emailController.text.trim() == adminEmail &&
-          passwordController.text.trim() == adminPassword) {
-             emailController.clear();
+        passwordController.text.trim() == adminPassword) {
+      emailController.clear();
       passwordController.clear();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AdminPage()),
-          
-        );
-        return;
-      }
-      //normal firebase login
+      
+    }
+    //normal firebase login
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
@@ -40,14 +35,10 @@ class _SigninPageState extends State<SigninPage> {
       );
       emailController.clear();
       passwordController.clear();
-
-      
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
     } catch (e) {
-      debugPrint("Login error:$e");
+       ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("login failed")));
     }
   }
 
@@ -58,8 +49,12 @@ class _SigninPageState extends State<SigninPage> {
       if (Theme.of(context).platform == TargetPlatform.android ||
           Theme.of(context).platform == TargetPlatform.iOS) {
         final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+        if (googleUser == null) {
+          return null;
+        }
+
         final GoogleSignInAuthentication? googleAuth =
-            await googleUser?.authentication;
+            await googleUser.authentication;
         final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken,
           idToken: googleAuth?.idToken,
@@ -195,15 +190,6 @@ class _SigninPageState extends State<SigninPage> {
                 ),
               ],
             ),
-            /* GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => AdminPage()),
-                );
-              },
-              child: Text("Admin "),
-            ),*/
           ],
         ),
       ),

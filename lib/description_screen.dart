@@ -26,6 +26,19 @@ class _DescriptionPageScreenState extends State<DescriptionPageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+        title: Text(
+          "Fashion store",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.amber[900],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(

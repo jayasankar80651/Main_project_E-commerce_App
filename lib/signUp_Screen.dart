@@ -25,8 +25,10 @@ class _SignupPageScreenState extends State<SignupPageScreen> {
       ).showSnackBar(SnackBar(content: Text("Please fill all fields")));
       return;
     }
-    if(passwordController.text !=confirmpasswordController.text){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password do not match")));
+    if (passwordController.text != confirmpasswordController.text) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Password do not match")));
       return;
     }
     try {
@@ -34,22 +36,23 @@ class _SignupPageScreenState extends State<SignupPageScreen> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Navigator.push(
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => SigninPage()),
-      );
-    } catch (e) {
-      debugPrint(" signup error:$e");
+      ).showSnackBar(SnackBar(content: Text("signup successful")));
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Signup failed")));
     }
   }
+
   @override
-  void dispose(){
+  void dispose() {
     fullnameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmpasswordController.dispose();
     super.dispose();
-
   }
 
   @override

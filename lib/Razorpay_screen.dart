@@ -29,6 +29,10 @@ class _RazorpayPayState extends State<RazorpayPage> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
 
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    
+     Future.delayed(const Duration(milliseconds: 300), () {
+    openCheckout();
+  });
   }
 
   @override
