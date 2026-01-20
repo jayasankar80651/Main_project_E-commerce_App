@@ -1,10 +1,10 @@
-import 'package:e_commerce_app/Home_Screen.dart';
+
 import 'package:e_commerce_app/ResetPassword.dart';
 import 'package:e_commerce_app/admin_screen.dart';
 import 'package:e_commerce_app/signUp_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+
 
 import 'package:google_sign_in/google_sign_in.dart';
 
