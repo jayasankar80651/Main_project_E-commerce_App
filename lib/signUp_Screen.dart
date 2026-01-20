@@ -1,6 +1,7 @@
 import 'package:e_commerce_app/singin_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class SignupPageScreen extends StatefulWidget {
   const SignupPageScreen({super.key});
@@ -36,9 +37,11 @@ class _SignupPageScreenState extends State<SignupPageScreen> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("signup successful")));
+     
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(
         context,

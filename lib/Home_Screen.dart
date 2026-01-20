@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                               child: SizedBox(
                                 
                                 child: Container(
-                                  height: 100,
+                                  height: 60,
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
@@ -226,6 +226,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: 10),
                             Text(
                               "" + Ds['productname'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
